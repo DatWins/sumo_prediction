@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sumo Predictor — Makuuchi Bout Predictions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f9f7f4;
+    color: #1a1a1a;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #c17b4e;
+    margin-bottom: 4px;
+    letter-spacing: 0.03em;
+  }
+  .subtitle {
+    text-align: center;
+    color: #6b6b6b;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    padding: 8px 22px;
+    border-radius: 20px;
+    border: 1px solid #d0c8be;
+    background: #fff;
+    color: #6b6b6b;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tab.active { background: #c17b4e; color: #fff; border-color: #c17b4e; }
+  .tab:not(.active):hover { border-color: #c17b4e; color: #c17b4e; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: #ffffff;
+    border: 1px solid #e0d9d0;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 760px;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  .card h2 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9a8f85;
+    margin-bottom: 16px;
+  }
+
+  /* Stat cards row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 10px;
+    max-width: 760px;
+    margin: 0 auto 16px auto;
+  }
+  .stat-card {
+    background: #fff;
+    border: 1px solid #e0d9d0;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  .stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: #9a8f85; margin-bottom: 4px; }
+  .stat-value { font-size: 1.4rem; font-weight: 800; color: #1a1a1a; }
+  .stat-value.accent { color: #4a8a61; }
+  .stat-value.gold   { color: #b08020; }
+  .stat-sub { font-size: 0.7rem; color: #9a8f85; margin-top: 2px; }
+
+  .badge {
+    font-size: 0.68rem; font-weight: 600; padding: 2px 8px;
+    border-radius: 10px; background: rgba(193,123,78,0.12); color: #a8653c;
+    vertical-align: middle; margin-left: 6px;
+  }
+  .green-badge { background: rgba(74,138,97,0.12); color: #3a7a55; }
+  .blue-badge  { background: rgba(60,100,180,0.12); color: #2a5aa8; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; border: 1px solid #e0d9d0; border-radius: 8px; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .data-table thead th {
+    background: #f9f7f4; text-align: left; padding: 8px 12px;
+    color: #9a8f85; font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    border-bottom: 1px solid #e0d9d0; white-space: nowrap;
+  }
+  .data-table tbody tr { border-bottom: 1px solid #f0ebe4; }
+  .data-table tbody tr:last-child { border-bottom: none; }
+  .data-table tbody tr:hover { background: #fdfbf9; }
+  .data-table td { padding: 8px 12px; vertical-align: middle; color: #1a1a1a; }
+
+  /* Win probability bar */
+  .prob-wrap { display: flex; align-items: center; gap: 7px; min-width: 100px; }
+  .prob-track { flex: 1; height: 5px; background: #ede8e2; border-radius: 3px; overflow: hidden; }
+  .prob-fill  { height: 100%; border-radius: 3px; }
+  .prob-pct   { font-size: 0.78rem; font-weight: 700; min-width: 36px; text-align: right; }
+
+  /* Record colours matching the spreadsheet tiers */
+  .rec-hot    { color: #375623; font-weight: 700; background: #92D050; padding: 1px 5px; border-radius: 3px; }
+  .rec-warm   { color: #375623; background: #E2EFDA; padding: 1px 5px; border-radius: 3px; }
+  .rec-ok     { color: #375623; background: #C6EFCE; padding: 1px 5px; border-radius: 3px; }
+  .rec-cold   { color: #843C0C; background: #FCE4D6; padding: 1px 5px; border-radius: 3px; }
+  .rec-danger { color: #fff;    background: #FF0000; padding: 1px 5px; border-radius: 3px; }
+
+  .pick-name  { font-weight: 700; color: #c17b4e; }
+  .conf-high  { color: #4a8a61; font-weight: 700; }
+  .conf-mid   { color: #c17b4e; font-weight: 700; }
+  .conf-low   { color: #9a8f85; }
+
+  /* Loading / no-data state */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #9a8f85;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+  .note {
+    font-size: 0.75rem;
+    color: #9a8f85;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  /* H2H panel */
+  .h2h-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .h2h-box {
+    background: #f9f7f4;
+    border: 1px solid #e0d9d0;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  .h2h-box .h2h-name { font-size: 0.72rem; text-transform: uppercase; color: #9a8f85; margin-bottom: 4px; letter-spacing: 0.06em; }
+  .h2h-box .h2h-wins { font-size: 2rem; font-weight: 800; line-height: 1; color: #c17b4e; }
+  .h2h-box .h2h-sub  { font-size: 0.72rem; color: #9a8f85; margin-top: 2px; }
+
+  .search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .search-row input, .search-row select {
+    padding: 8px 12px;
+    border: 1px solid #d0c8be;
+    border-radius: 6px;
+    background: #f9f7f4;
+    color: #1a1a1a;
+    font-size: 0.9rem;
+    flex: 1;
+  }
+  .search-row input:focus, .search-row select:focus { outline: none; border-color: #c17b4e; }
+
+  .btn {
+    padding: 8px 20px;
+    background: #c17b4e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: #a8653c; }
+
+  @media (max-width:600px) {
+    .stats-row { grid-template-columns: repeat(2,1fr); }
+    .h2h-grid  { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🏯 Sumo Predictor</h1>
+<p class="subtitle" id="subtitle-line">Makuuchi bout predictions · LightGBM model · Historical data 1991–present</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('picks', this)">📋 Today's Picks</button>
+  <button class="tab"        onclick="switchTab('basho', this)">🏆 Basho Log</button>
+  <button class="tab"        onclick="switchTab('h2h',   this)">⚔️ H2H Lookup</button>
+  <button class="tab"        onclick="switchTab('about', this)">ℹ️ Model</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PANEL: TODAY'S PICKS
+     ══════════════════════════════════════════════════════════ -->
+<div id="panel-picks" class="panel active">
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Basho</div>
+      <div class="stat-value" id="stat-basho">—</div>
+      <div class="stat-sub" id="stat-day">Loading…</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Basho Record</div>
+      <div class="stat-value accent" id="stat-record">—</div>
+      <div class="stat-sub" id="stat-acc">model vs picks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Backtest Accuracy</div>
+      <div class="stat-value gold">~67%</div>
+      <div class="stat-sub">1991–2023 · Makuuchi</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Model</div>
+      <div class="stat-value" style="font-size:1rem;padding-top:4px">LightGBM</div>
+      <div class="stat-sub">H2H · rank · form · style</div>
+    </div>
+  </div>
+
+  <div class="card" id="picks-card">
+    <h2 id="picks-heading">Today's Bout Predictions <span class="badge" id="picks-badge">loading…</span></h2>
+    <div id="picks-body">
+      <div class="empty-state">
+        <div class="empty-icon">🏯</div>
+        <div>Loading predictions…</div>
+        <div style="margin-top:8px;font-size:0.8rem">If this persists, predictions.json may not have been pushed yet today.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="locks-card" style="display:none">
+    <h2>🔒 High-Confidence Picks <span class="badge green-badge">≥ 65%</span></h2>
+    <div id="locks-body"></div>
+  </div>
+
+</div><!-- /panel-picks -->
+
+<!-- ══════════════════════════════════════════════════════════
+     PANEL: BASHO LOG
+     ══════════════════════════════════════════════════════════ -->
+<div id="panel-basho" class="panel">
+
+  <div class="card">
+    <h2>Season Log <span class="badge">Current basho</span></h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Day</th><th>Correct</th><th>Total</th><th>Accuracy</th><th>Notes</th></tr>
+        </thead>
+        <tbody id="log-tbody">
+          <tr><td colspan="5" style="text-align:center;color:#9a8f85;padding:20px">No log data yet</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>All-Time Model Performance</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Basho</th><th>Record</th><th>Accuracy</th><th>Notes</th></tr>
+        </thead>
+        <tbody id="history-tbody">
+          <tr><td colspan="4" style="text-align:center;color:#9a8f85;padding:20px">Will populate as basho complete</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Model trained on 1991–2023 data. Backtest accuracy ~67% on 2024+ holdout.</p>
+  </div>
+
+</div><!-- /panel-basho -->
+
+<!-- ══════════════════════════════════════════════════════════
+     PANEL: H2H LOOKUP
+     ══════════════════════════════════════════════════════════ -->
+<div id="panel-h2h" class="panel">
+
+  <div class="card">
+    <h2>Head-to-Head Record Lookup</h2>
+    <div class="search-row">
+      <input type="text" id="h2h-east" placeholder="East rikishi name…" oninput="filterH2H()">
+      <input type="text" id="h2h-west" placeholder="West rikishi name…" oninput="filterH2H()">
+      <button class="btn" onclick="lookupH2H()">Look up</button>
+    </div>
+    <div id="h2h-result">
+      <div class="empty-state">
+        <div class="empty-icon">⚔️</div>
+        <div>Enter two rikishi names to see their career head-to-head record.</div>
+        <div style="margin-top:8px;font-size:0.8rem">Names must match the h2h.json file (English shikona).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Recent Meetings</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Basho</th><th>Day</th><th>East</th><th>West</th><th>Winner</th><th>Kimarite</th></tr>
+        </thead>
+        <tbody id="h2h-bouts-tbody">
+          <tr><td colspan="6" style="text-align:center;color:#9a8f85;padding:20px">Look up two rikishi above</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /panel-h2h -->
+
+<!-- ══════════════════════════════════════════════════════════
+     PANEL: ABOUT THE MODEL
+     ══════════════════════════════════════════════════════════ -->
+<div id="panel-about" class="panel">
+
+  <div class="card">
+    <h2>How the model works</h2>
+    <p style="font-size:0.9rem;line-height:1.7;color:#4a4a4a;margin-bottom:16px">
+      The model predicts the winner of each individual Makuuchi bout using a
+      <strong>LightGBM binary classifier</strong> trained on ~39,000 bouts from
+      1991–2023. It outputs a win probability for each rikishi, and picks the
+      one with the higher probability.
+    </p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Feature</th><th>Description</th><th>Importance</th></tr></thead>
+        <tbody>
+          <tr><td><strong>H2H win %</strong></td><td>Career head-to-head win rate vs this opponent</td><td class="conf-high">🔴 Highest</td></tr>
+          <tr><td><strong>Record diff</strong></td><td>(East wins−losses) − (West wins−losses) this basho</td><td class="conf-high">🔴 High</td></tr>
+          <tr><td><strong>Rank diff</strong></td><td>Rank number gap (Yokozuna=1, M16=36)</td><td class="conf-mid">🟠 High</td></tr>
+          <tr><td><strong>Momentum</strong></td><td>Wins in last 3 bouts this basho</td><td class="conf-mid">🟠 Medium</td></tr>
+          <tr><td><strong>KK safe</strong></td><td>Rikishi already has 8 wins (less motivated)</td><td class="conf-mid">🟠 Medium</td></tr>
+          <tr><td><strong>MK risk</strong></td><td>Rikishi at 7 losses (must-win pressure)</td><td class="conf-mid">🟠 Medium</td></tr>
+          <tr><td><strong>Oshi ratio</strong></td><td>% of career wins by pushing technique (style)</td><td class="conf-low">⚪ Lower</td></tr>
+          <tr><td><strong>BMI diff</strong></td><td>Body mass difference (size matchup)</td><td class="conf-low">⚪ Lower</td></tr>
+          <tr><td><strong>Day</strong></td><td>Day of basho (later = higher stakes)</td><td class="conf-low">⚪ Lower</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Data sources</h2>
+    <p style="font-size:0.88rem;line-height:1.7;color:#4a4a4a">
+      Bout results, banzuke, and rikishi stats pulled from
+      <a href="https://sumo-api.com" style="color:#c17b4e">sumo-api.com</a>
+      (which wraps SumoDB). Kimarite data complete from 1991.
+      Banzuke and results go back to 1757, with daily results from 1909.
+    </p>
+    <p style="font-size:0.88rem;line-height:1.7;color:#4a4a4a;margin-top:12px">
+      <strong>Yaocho note:</strong> Day 15 bouts involving a 7-7 rikishi show
+      statistically anomalous win rates consistent with match-fixing evidence in
+      the literature. These bouts are flagged but included in training.
+    </p>
+    <p style="font-size:0.88rem;line-height:1.7;color:#4a4a4a;margin-top:12px">
+      Realistic accuracy ceiling for individual bout prediction is <strong>65–70%</strong>.
+      Sumo has genuine randomness — favourites lose regularly.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Scripts</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Script</th><th>Purpose</th><th>When to run</th></tr></thead>
+        <tbody>
+          <tr><td><code>sumo_scraper.py</code></td><td>Pull all Makuuchi bouts into sumo_bouts.db</td><td>Once, then after each basho</td></tr>
+          <tr><td><code>sumo_model.py</code></td><td>Train LightGBM model → sumo_model.pkl</td><td>After scraping new data</td></tr>
+          <tr><td><code>sumo_predict.py</code></td><td>Generate predictions.json for today</td><td>Each day during a basho</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Run on your local machine; push predictions.json to this repo; GitHub Pages serves the site automatically.</p>
+  </div>
+
+</div><!-- /panel-about -->
+
+
+<script>
+// ════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ════════════════════════════════════════════════════════════
+function switchTab(panel, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + panel).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════
+function barColor(p) {
+  return p >= 75 ? '#4a8a61' : p >= 60 ? '#c17b4e' : p >= 50 ? '#b08020' : '#c0392b';
+}
+
+function recClass(rec) {
+  if (!rec) return '';
+  const parts = rec.split('-');
+  if (parts.length !== 2) return '';
+  const w = parseInt(parts[0]), l = parseInt(parts[1]);
+  if (w >= 8) return 'rec-hot';
+  if (w >= 7) return 'rec-warm';
+  if (w >= 6) return 'rec-ok';
+  if (l >= 7) return 'rec-danger';
+  if (l >= 6) return 'rec-cold';
+  return '';
+}
+
+function recCell(rec) {
+  const cls = recClass(rec);
+  return cls ? `<span class="${cls}">${rec}</span>` : rec;
+}
+
+function bashoName(id) {
+  if (!id) return '—';
+  const year = id.slice(0, 4);
+  const month = parseInt(id.slice(4));
+  const names = {1:'Hatsu',3:'Haru',5:'Natsu',7:'Nagoya',9:'Aki',11:'Kyushu'};
+  return `${names[month] || month} ${year}`;
+}
+
+// ════════════════════════════════════════════════════════════
+// LOAD PREDICTIONS
+// ════════════════════════════════════════════════════════════
+let H2H_DATA = {};
+
+async function loadPredictions() {
+  let data;
+  try {
+    const r = await fetch('predictions.json');
+    if (!r.ok) throw new Error('not found');
+    data = await r.json();
+  } catch(e) {
+    document.getElementById('picks-body').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🏯</div>
+        <div>No predictions loaded yet.</div>
+        <div style="margin-top:8px;font-size:0.8rem">
+          Run <code>sumo_predict.py</code> on your machine and push
+          <code>predictions.json</code> to this repo.
+        </div>
+      </div>`;
+    document.getElementById('picks-badge').textContent = 'no data';
+    return;
+  }
+
+  // Header
+  const bn = bashoName(data.basho_id);
+  document.getElementById('stat-basho').textContent = bn;
+  document.getElementById('stat-day').textContent = `Day ${data.day}`;
+  document.getElementById('subtitle-line').textContent =
+    `Makuuchi bout predictions · ${bn} · Day ${data.day}`;
+  document.getElementById('picks-heading').childNodes[0].nodeValue = `Day ${data.day} Bout Predictions `;
+  document.getElementById('picks-badge').textContent =
+    `${data.basho_id} · generated ${data.generated || 'today'}`;
+
+  // Basho record
+  if (data.basho_correct !== undefined) {
+    const pct = data.basho_total ? (data.basho_correct / data.basho_total * 100).toFixed(1) : '—';
+    document.getElementById('stat-record').textContent = `${data.basho_correct}/${data.basho_total}`;
+    document.getElementById('stat-acc').textContent = `${pct}% this basho`;
+  }
+
+  // Build bout table
+  const bouts = data.bouts || [];
+  if (bouts.length === 0) {
+    document.getElementById('picks-body').innerHTML = '<div class="empty-state"><div>No bouts in this file.</div></div>';
+    return;
+  }
+
+  let html = `<div class="table-wrap"><table class="data-table">
+    <thead><tr>
+      <th>#</th>
+      <th>East</th><th>Rec</th>
+      <th>West</th><th>Rec</th>
+      <th>H2H</th>
+      <th>Pick</th>
+      <th>Win %</th>
+    </tr></thead><tbody>`;
+
+  const locks = [];
+
+  bouts.forEach((b, i) => {
+    const prob  = (b.pick_prob * 100).toFixed(1);
+    const color = barColor(b.pick_prob * 100);
+    const confCls = b.pick_prob >= 0.65 ? 'conf-high' : b.pick_prob >= 0.55 ? 'conf-mid' : 'conf-low';
+
+    // highlight the picked side
+    const eName = b.pick === b.east ? `<span class="pick-name">${b.east}</span>` : b.east;
+    const wName = b.pick === b.west ? `<span class="pick-name">${b.west}</span>` : b.west;
+
+    html += `<tr>
+      <td style="color:#9a8f85;font-weight:700">${i+1}</td>
+      <td>${eName}</td>
+      <td>${recCell(b.east_rec)}</td>
+      <td>${wName}</td>
+      <td>${recCell(b.west_rec)}</td>
+      <td style="color:#9a8f85;font-size:0.8rem">${b.h2h || '—'}</td>
+      <td><span class="pick-name">${b.pick}</span></td>
+      <td><div class="prob-wrap">
+        <div class="prob-track"><div class="prob-fill" style="width:${prob}%;background:${color}"></div></div>
+        <span class="prob-pct ${confCls}">${prob}%</span>
+      </div></td>
+    </tr>`;
+
+    if (b.pick_prob >= 0.65) locks.push(b);
+  });
+
+  html += '</tbody></table></div>';
+  document.getElementById('picks-body').innerHTML = html;
+
+  // Locks section
+  if (locks.length > 0) {
+    document.getElementById('locks-card').style.display = 'block';
+    document.getElementById('locks-body').innerHTML = locks.map(b =>
+      `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0ebe4">
+        <span style="font-weight:700">${b.pick}</span>
+        <span style="color:#9a8f85;font-size:0.82rem">vs ${b.pick===b.east ? b.west : b.east}</span>
+        <span class="conf-high">${(b.pick_prob*100).toFixed(1)}%</span>
+      </div>`
+    ).join('') + '<div style="font-size:0.75rem;color:#9a8f85;margin-top:10px">These are the model\'s most confident picks today. Still not guaranteed — sumo is unpredictable.</div>';
+  }
+
+  // Load H2H data if available
+  try {
+    const rh = await fetch('h2h.json');
+    if (rh.ok) H2H_DATA = await rh.json();
+  } catch(e) {}
+
+  // Load basho log if available
+  try {
+    const rl = await fetch('basho_log.json');
+    if (rl.ok) {
+      const log = await rl.json();
+      renderLog(log);
+    }
+  } catch(e) {}
+}
+
+// ════════════════════════════════════════════════════════════
+// BASHO LOG
+// ════════════════════════════════════════════════════════════
+function renderLog(log) {
+  const tbody = document.getElementById('log-tbody');
+  const histBody = document.getElementById('history-tbody');
+  if (!log || !log.days) return;
+
+  tbody.innerHTML = log.days.map(d => {
+    const acc = d.total ? (d.correct / d.total * 100).toFixed(1) + '%' : '—';
+    return `<tr>
+      <td style="font-weight:700;color:#c17b4e">Day ${d.day}</td>
+      <td style="font-weight:700">${d.correct}</td>
+      <td>${d.total}</td>
+      <td>${acc}</td>
+      <td style="color:#9a8f85;font-size:0.82rem">${d.notes || ''}</td>
+    </tr>`;
+  }).join('');
+
+  if (log.history) {
+    histBody.innerHTML = log.history.map(h => `<tr>
+      <td style="font-weight:700">${bashoName(h.basho_id)}</td>
+      <td>${h.correct}/${h.total}</td>
+      <td>${(h.correct/h.total*100).toFixed(1)}%</td>
+      <td style="color:#9a8f85;font-size:0.82rem">${h.notes || ''}</td>
+    </tr>`).join('');
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// H2H LOOKUP
+// ════════════════════════════════════════════════════════════
+function lookupH2H() {
+  const a = document.getElementById('h2h-east').value.trim();
+  const b = document.getElementById('h2h-west').value.trim();
+  if (!a || !b) return;
+
+  const result = document.getElementById('h2h-result');
+  const boutsTbody = document.getElementById('h2h-bouts-tbody');
+
+  // Try to find in H2H_DATA
+  const key1 = `${a}|${b}`;
+  const key2 = `${b}|${a}`;
+  const entry = H2H_DATA[key1] || H2H_DATA[key2];
+
+  if (!entry) {
+    result.innerHTML = `<div class="empty-state"><div>No H2H data found for <strong>${a}</strong> vs <strong>${b}</strong>.</div>
+      <div style="margin-top:8px;font-size:0.8rem">Check spelling. Names must match English shikona in the database.</div></div>`;
+    boutsTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#9a8f85;padding:20px">No data</td></tr>';
+    return;
+  }
+
+  const aWins = H2H_DATA[key1] ? entry.wins : entry.losses;
+  const bWins = H2H_DATA[key1] ? entry.losses : entry.wins;
+  const total  = aWins + bWins;
+
+  result.innerHTML = `
+    <div class="h2h-grid">
+      <div class="h2h-box">
+        <div class="h2h-name">${a}</div>
+        <div class="h2h-wins">${aWins}</div>
+        <div class="h2h-sub">wins (${total ? (aWins/total*100).toFixed(0) : 0}%)</div>
+      </div>
+      <div class="h2h-box">
+        <div class="h2h-name">${b}</div>
+        <div class="h2h-wins">${bWins}</div>
+        <div class="h2h-sub">wins (${total ? (bWins/total*100).toFixed(0) : 0}%)</div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:0.82rem;color:#6b6b6b">${total} career meetings</div>`;
+
+  // Recent bouts
+  if (entry.bouts && entry.bouts.length > 0) {
+    boutsTbody.innerHTML = entry.bouts.slice(-10).reverse().map(bk => `<tr>
+      <td>${bk.basho_id}</td>
+      <td>${bk.day}</td>
+      <td>${bk.east}</td>
+      <td>${bk.west}</td>
+      <td style="font-weight:700;color:#c17b4e">${bk.winner}</td>
+      <td style="color:#9a8f85;font-size:0.8rem">${bk.kimarite || '—'}</td>
+    </tr>`).join('');
+  } else {
+    boutsTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#9a8f85;padding:20px">No individual bout data in h2h.json</td></tr>';
+  }
+}
+
+function filterH2H() { /* live filter could go here */ }
+
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
+loadPredictions();
+</script>
+</body>
+</html>

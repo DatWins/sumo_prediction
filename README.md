@@ -1,4 +1,4 @@
-# Sumo Predictor
+﻿# Sumo Predictor
 
 Machine-learning predictions for Makuuchi sumo bouts.  
 Live site: **https://datwins.github.io/sumo_prediction**
@@ -59,7 +59,7 @@ git push
 - **Age diff** — age gap on day of bout
 - **Day** — day of basho
 
-Accuracy: 75.3%** on 2024+ holdout (trained on 2000�2023, ~47k Makuuchi bouts).
+Accuracy: 75.3%** on 2024+ holdout (trained on 2000�2023, ~47k Makuuchi bouts).
 
 ## GitHub Pages setup
 

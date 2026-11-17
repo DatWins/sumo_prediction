@@ -207,7 +207,7 @@
 <body>
 
 <h1>🏯 Sumo Predictor</h1>
-<p class="subtitle" id="subtitle-line">Makuuchi bout predictions · LightGBM model · Historical data 1991–present</p>
+<p class="subtitle" id="subtitle-line">Makuuchi bout predictions · LightGBM model · Historical data 2000–present</p>
 
 <div class="tabs">
   <button class="tab active" onclick="switchTab('picks', this)">📋 Today's Picks</button>
@@ -234,8 +234,8 @@
     </div>
     <div class="stat-card">
       <div class="stat-label">Backtest Accuracy</div>
-      <div class="stat-value gold">~67%</div>
-      <div class="stat-sub">1991–2023 · Makuuchi</div>
+      <div class="stat-value gold">75.3%</div>
+      <div class="stat-sub">2000–2023 · Makuuchi</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Model</div>
@@ -293,7 +293,7 @@
         </tbody>
       </table>
     </div>
-    <p class="note">Model trained on 1991–2023 data. Backtest accuracy ~67% on 2024+ holdout.</p>
+    <p class="note">Model trained on 2000–2023 data. Backtest accuracy 75.3% on 2024+ holdout.</p>
   </div>
 
 </div><!-- /panel-basho -->
@@ -345,7 +345,7 @@
     <p style="font-size:0.9rem;line-height:1.7;color:#4a4a4a;margin-bottom:16px">
       The model predicts the winner of each individual Makuuchi bout using a
       <strong>LightGBM binary classifier</strong> trained on ~39,000 bouts from
-      1991–2023. It outputs a win probability for each rikishi, and picks the
+      2000–2023. It outputs a win probability for each rikishi, and picks the
       one with the higher probability.
     </p>
     <div class="table-wrap">
@@ -485,7 +485,8 @@ async function loadPredictions() {
   // Basho record
   if (data.basho_correct !== undefined) {
     const pct = data.basho_total ? (data.basho_correct / data.basho_total * 100).toFixed(1) : '—';
-    document.getElementById('stat-record').textContent = `${data.basho_correct}/${data.basho_total}`;
+    const bc = data.basho_correct, bt = data.basho_total;
+    document.getElementById('stat-record').textContent = (bc != null && bt != null) ? `${bc}/${bt}` : '—/—';
     document.getElementById('stat-acc').textContent = `${pct}% this basho`;
   }
 

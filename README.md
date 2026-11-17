@@ -21,7 +21,7 @@ pip install requests lightgbm pandas numpy joblib scikit-learn
 ## Workflow
 
 ```bash
-# First time — scrape all bouts 1991–present (takes 30–60 min)
+# First time — scrape all bouts 2000–present (takes 30–60 min)
 python sumo_scraper.py
 
 # Train the model
@@ -59,7 +59,7 @@ git push
 - **Age diff** — age gap on day of bout
 - **Day** — day of basho
 
-Accuracy: 75.3%** on 2024+ holdout (trained on 2000�2023, ~47k Makuuchi bouts).
+Accuracy: **75.3%** on 2024+ holdout (trained on 2000-2023, ~47k Makuuchi bouts).
 
 ## GitHub Pages setup
 

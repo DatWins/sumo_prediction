@@ -59,7 +59,7 @@ git push
 - **Age diff** — age gap on day of bout
 - **Day** — day of basho
 
-Accuracy: ~67% on 2024+ holdout (trained on 1991–2023, ~39k Makuuchi bouts).
+Accuracy: 75.3%** on 2024+ holdout (trained on 2000�2023, ~47k Makuuchi bouts).
 
 ## GitHub Pages setup
 

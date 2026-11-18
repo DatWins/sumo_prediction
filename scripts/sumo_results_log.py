@@ -59,26 +59,27 @@ if not torikumi:
 
 print(f"  Got {len(torikumi)} bouts from API")
 
-# Build lookup by name: (eastName, westName) -> actual winner ("east" | "west" | None)
-# API fields: eastShikona, westShikona, winnerId, eastId, westId
-actual = {}
-actual_by_id = {}
+# Build lookup by name pair: (eastShikona, westShikona) -> actual winner name (winnerEn)
+# API fields confirmed: eastShikona, westShikona, winnerId, eastId, westId, winnerEn
+actual = {}   # (eastName, westName) -> winnerEn  (English name of actual winner)
 for bout in torikumi:
-    eid      = bout.get("eastId")  or bout.get("east_id")
-    wid      = bout.get("westId")  or bout.get("west_id")
-    winner   = bout.get("winnerId") or bout.get("winner_id")
-    ename    = (bout.get("eastShikona") or bout.get("east_shikona") or "").strip()
-    wname    = (bout.get("westShikona") or bout.get("west_shikona") or "").strip()
+    ename      = (bout.get("eastShikona") or "").strip()
+    wname      = (bout.get("westShikona") or "").strip()
+    winner_en  = (bout.get("winnerEn") or "").strip()
+    winner_id  = bout.get("winnerId")
+    east_id    = bout.get("eastId")
 
-    if winner and eid and wid:
-        result = "east" if winner == eid else ("west" if winner == wid else None)
-    else:
-        result = None
+    if not (ename and wname):
+        continue
 
-    if eid and wid:
-        actual_by_id[(str(eid), str(wid))] = result
-    if ename and wname:
-        actual[(ename, wname)] = result
+    if winner_en:
+        actual[(ename, wname)] = winner_en
+        actual[(wname, ename)] = winner_en  # also index reversed in case day card differs
+    elif winner_id and east_id:
+        # fallback: derive from IDs
+        winner_name = ename if winner_id == east_id else wname
+        actual[(ename, wname)] = winner_name
+        actual[(wname, ename)] = winner_name
 
 # ── Load predictions ──────────────────────────────────────────────────────────
 if not pred_path.exists():
@@ -124,10 +125,20 @@ for bout in preds:
             prob = bout.get("east_win_prob", bout.get("pick_prob", 0.5))
             pred_winner = "east" if float(prob) >= 0.5 else "west"
 
-    # Lookup actual result: try by name first, then by ID
-    actual_winner = actual.get((east_name.strip(), west_name.strip()))
-    if actual_winner is None and eid and wid:
-        actual_winner = actual_by_id.get((eid, wid))
+    # Lookup actual winner name from API, trying both orientations
+    winner_name = actual.get((east_name.strip(), west_name.strip()))
+    if winner_name is None:
+        winner_name = actual.get((west_name.strip(), east_name.strip()))
+
+    # Convert winner name to "east" / "west"
+    if winner_name is None:
+        actual_winner = None
+    elif winner_name.strip() == east_name.strip():
+        actual_winner = "east"
+    elif winner_name.strip() == west_name.strip():
+        actual_winner = "west"
+    else:
+        actual_winner = None  # name mismatch
 
     if actual_winner is None:
         # Result not in API yet

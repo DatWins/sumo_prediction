@@ -5,7 +5,7 @@ Compares a day's model predictions against actual bout results from sumo-api.com
 then appends/updates an entry in docs\results.json for the GitHub Pages site.
 
 Usage (run AFTER bouts complete):
-    python scripts\sumo_results_log.py 202611 10
+    python scripts/sumo_results_log.py 202611 10
 
 What it does:
 1. Fetches actual results for <bashoId> day <day> from sumo-api.com
@@ -37,7 +37,7 @@ day      = int(sys.argv[2])     # e.g. 10
 # Script lives in scripts\, so repo root is one level up from __file__
 script_dir   = Path(__file__).parent
 repo_root    = script_dir.parent
-docs_dir     = repo_root / "sumo_prediction" / "docs"
+docs_dir     = repo_root / "docs"
 results_path = docs_dir / "results.json"
 pred_path    = docs_dir / "predictions.json"
 

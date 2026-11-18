@@ -558,7 +558,7 @@ async function loadPredictions() {
 
   // Load basho log if available
   try {
-    const rl = await fetch('basho_log.json');
+    const rl = await fetch('results.json');
     if (rl.ok) {
       const log = await rl.json();
       renderLog(log);
@@ -574,18 +574,47 @@ function renderLog(log) {
   const histBody = document.getElementById('history-tbody');
   if (!log || !log.days) return;
 
-  tbody.innerHTML = log.days.map(d => {
+  // Populate season log rows
+  const rows = log.days.map(d => {
     const acc = d.total ? (d.correct / d.total * 100).toFixed(1) + '%' : '—';
+    const accNum = d.total ? d.correct / d.total : 0;
+    const accColor = accNum >= 0.80 ? '#2d9e55' : accNum >= 0.70 ? '#c17b4e' : '#c0392b';
     return `<tr>
       <td style="font-weight:700;color:#c17b4e">Day ${d.day}</td>
       <td style="font-weight:700">${d.correct}</td>
       <td>${d.total}</td>
-      <td>${acc}</td>
+      <td style="font-weight:700;color:${accColor}">${acc}</td>
       <td style="color:#9a8f85;font-size:0.82rem">${d.notes || ''}</td>
     </tr>`;
-  }).join('');
+  });
 
-  if (log.history) {
+  // Add totals row if we have multiple days
+  if (log.days.length > 1 && log.basho_correct !== undefined) {
+    const tot = log.basho_total || 0;
+    const cor = log.basho_correct || 0;
+    const pct = tot ? (cor / tot * 100).toFixed(1) + '%' : '—';
+    const totColor = tot ? (cor / tot >= 0.75 ? '#2d9e55' : '#c17b4e') : '#6b6b6b';
+    rows.push(`<tr style="border-top:2px solid #d0c8be;background:#f9f7f4">
+      <td style="font-weight:700;color:#6b6b6b">TOTAL</td>
+      <td style="font-weight:700">${cor}</td>
+      <td>${tot}</td>
+      <td style="font-weight:700;color:${totColor}">${pct}</td>
+      <td style="color:#9a8f85;font-size:0.82rem">Running total</td>
+    </tr>`);
+  }
+
+  tbody.innerHTML = rows.join('');
+
+  // Update basho record stat card from results.json
+  if (log.basho_correct !== undefined && log.basho_total !== undefined) {
+    const bc = log.basho_correct, bt = log.basho_total;
+    document.getElementById('stat-record').textContent = `${bc}/${bt}`;
+    const pct = bt ? (bc / bt * 100).toFixed(1) : '—';
+    document.getElementById('stat-acc').textContent = `${pct}% this basho`;
+  }
+
+  // All-time history (optional — if results.json includes a history array)
+  if (log.history && log.history.length > 0) {
     histBody.innerHTML = log.history.map(h => `<tr>
       <td style="font-weight:700">${bashoName(h.basho_id)}</td>
       <td>${h.correct}/${h.total}</td>

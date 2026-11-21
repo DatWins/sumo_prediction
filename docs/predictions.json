@@ -1,7 +1,7 @@
 {
   "basho_id": "202611",
   "day": 15,
-  "generated": "2026-11-21 07:28",
+  "generated": "2026-11-21 07:33",
   "basho_correct": null,
   "basho_total": null,
   "bouts": [
@@ -10,174 +10,174 @@
       "west": "Asasuiryu",
       "east_rank": "Maegashira 15 East",
       "west_rank": "Maegashira 13 West",
-      "east_rec": "6-4",
-      "west_rec": "4-6",
-      "h2h": "—",
-      "pick": "Tamawashi",
-      "pick_prob": 0.5341
+      "east_rec": "9-5",
+      "west_rec": "4-10",
+      "h2h": "0-1",
+      "pick": "Asasuiryu",
+      "pick_prob": 0.9975
     },
     {
       "east": "Ichiyamamoto",
       "west": "Kitanowaka",
       "east_rank": "Maegashira 12 East",
       "west_rank": "Maegashira 15 West",
-      "east_rec": "6-4",
-      "west_rec": "5-5",
-      "h2h": "1-1",
-      "pick": "Ichiyamamoto",
-      "pick_prob": 0.5279
+      "east_rec": "9-5",
+      "west_rec": "8-6",
+      "h2h": "1-2",
+      "pick": "Kitanowaka",
+      "pick_prob": 0.7222
     },
     {
       "east": "Takanosho",
       "west": "Dewanoryu",
       "east_rank": "Maegashira 11 East",
       "west_rank": "Maegashira 14 West",
-      "east_rec": "6-4",
-      "west_rec": "7-3",
-      "h2h": "—",
+      "east_rec": "9-5",
+      "west_rec": "8-6",
+      "h2h": "0-1",
       "pick": "Dewanoryu",
-      "pick_prob": 0.5126
+      "pick_prob": 0.9984
     },
     {
       "east": "Oshoma",
       "west": "Kyokukaiyu",
       "east_rank": "Maegashira 9 East",
       "west_rank": "Maegashira 16 West",
-      "east_rec": "6-4",
-      "west_rec": "5-5",
-      "h2h": "—",
+      "east_rec": "7-7",
+      "west_rec": "7-7",
+      "h2h": "0-1",
       "pick": "Kyokukaiyu",
-      "pick_prob": 0.5049
+      "pick_prob": 0.9983
     },
     {
       "east": "Asahakuryu",
       "west": "Nishikifuji",
       "east_rank": "Maegashira 11 West",
       "west_rank": "Maegashira 8 West",
-      "east_rec": "8-2",
-      "west_rec": "6-4",
-      "h2h": "1-3",
+      "east_rec": "10-4",
+      "west_rec": "8-6",
+      "h2h": "1-4",
       "pick": "Nishikifuji",
-      "pick_prob": 0.7747
+      "pick_prob": 0.7411
     },
     {
       "east": "Roga",
       "west": "Toshinofuji",
       "east_rank": "Maegashira 8 East",
       "west_rank": "Maegashira 13 East",
-      "east_rec": "7-3",
-      "west_rec": "5-5",
-      "h2h": "—",
-      "pick": "Roga",
-      "pick_prob": 0.5347
+      "east_rec": "9-5",
+      "west_rec": "8-6",
+      "h2h": "0-1",
+      "pick": "Toshinofuji",
+      "pick_prob": 0.9983
     },
     {
       "east": "Daiseizan",
       "west": "Kotoeiho",
       "east_rank": "Maegashira 17 East",
       "west_rank": "Maegashira 6 West",
-      "east_rec": "3-7",
-      "west_rec": "1-3",
-      "h2h": "—",
+      "east_rec": "3-11",
+      "west_rec": "6-2",
+      "h2h": "0-1",
       "pick": "Kotoeiho",
-      "pick_prob": 0.5828
+      "pick_prob": 0.999
     },
     {
       "east": "Kotoshoho",
       "west": "Arashifuji",
       "east_rank": "Maegashira 6 East",
       "west_rank": "Maegashira 16 East",
-      "east_rec": "5-5",
-      "west_rec": "7-3",
-      "h2h": "—",
+      "east_rec": "7-7",
+      "west_rec": "7-7",
+      "h2h": "0-1",
       "pick": "Arashifuji",
-      "pick_prob": 0.505
+      "pick_prob": 0.9984
     },
     {
       "east": "Takerufuji",
       "west": "Tokihayate",
       "east_rank": "Maegashira 4 East",
       "west_rank": "Maegashira 14 East",
-      "east_rec": "2-8",
-      "west_rec": "2-8",
-      "h2h": "1-2",
+      "east_rec": "5-9",
+      "west_rec": "4-10",
+      "h2h": "1-3",
       "pick": "Tokihayate",
-      "pick_prob": 0.6981
+      "pick_prob": 0.7418
     },
     {
       "east": "Oho",
       "west": "Hakunofuji",
       "east_rank": "Maegashira 10 West",
       "west_rank": "Maegashira 3 West",
-      "east_rec": "6-4",
-      "west_rec": "4-6",
-      "h2h": "1-1",
-      "pick": "Oho",
-      "pick_prob": 0.505
+      "east_rec": "8-6",
+      "west_rec": "5-9",
+      "h2h": "1-2",
+      "pick": "Hakunofuji",
+      "pick_prob": 0.7318
     },
     {
       "east": "Takayasu",
       "west": "Fujiseiun",
       "east_rank": "Maegashira 3 East",
       "west_rank": "Maegashira 2 West",
-      "east_rec": "3-7",
-      "west_rec": "5-5",
-      "h2h": "1-0",
-      "pick": "Takayasu",
-      "pick_prob": 0.9983
+      "east_rec": "3-11",
+      "west_rec": "6-8",
+      "h2h": "1-1",
+      "pick": "Fujiseiun",
+      "pick_prob": 0.5806
     },
     {
       "east": "Ura",
       "west": "Abi",
       "east_rank": "Maegashira 2 East",
       "west_rank": "Maegashira 12 West",
-      "east_rec": "3-7",
-      "west_rec": "5-5",
-      "h2h": "2-5",
+      "east_rec": "5-9",
+      "west_rec": "6-8",
+      "h2h": "2-6",
       "pick": "Abi",
-      "pick_prob": 0.7286
+      "pick_prob": 0.7952
     },
     {
       "east": "Daieisho",
       "west": "Fujiryoga",
       "east_rank": "Maegashira 4 West",
       "west_rank": "Maegashira 1 West",
-      "east_rec": "3-7",
-      "west_rec": "6-4",
-      "h2h": "—",
+      "east_rec": "5-9",
+      "west_rec": "8-6",
+      "h2h": "0-1",
       "pick": "Fujiryoga",
-      "pick_prob": 0.5556
+      "pick_prob": 0.9984
     },
     {
       "east": "Asanoyama",
       "west": "Kinbozan",
       "east_rank": "Maegashira 1 East",
       "west_rank": "Maegashira 7 West",
-      "east_rec": "5-5",
-      "west_rec": "8-2",
-      "h2h": "3-0",
+      "east_rec": "10-4",
+      "west_rec": "10-4",
+      "h2h": "3-1",
       "pick": "Asanoyama",
-      "pick_prob": 0.9987
+      "pick_prob": 0.7139
     },
     {
       "east": "Gonoyama",
       "west": "Yoshinofuji",
       "east_rank": "Maegashira 5 West",
       "west_rank": "Komusubi 1 West",
-      "east_rec": "5-5",
-      "west_rec": "6-4",
-      "h2h": "0-1",
+      "east_rec": "7-7",
+      "west_rec": "7-7",
+      "h2h": "0-2",
       "pick": "Yoshinofuji",
-      "pick_prob": 0.9987
+      "pick_prob": 0.9986
     },
     {
       "east": "Churanoumi",
       "west": "Hiradoumi",
       "east_rank": "Komusubi 1 East",
       "west_rank": "Maegashira 5 East",
-      "east_rec": "1-9",
-      "west_rec": "2-8",
-      "h2h": "0-2",
+      "east_rec": "3-11",
+      "west_rec": "4-10",
+      "h2h": "0-3",
       "pick": "Hiradoumi",
       "pick_prob": 0.9985
     },
@@ -186,44 +186,44 @@
       "west": "Atamifuji",
       "east_rank": "Maegashira 7 East",
       "west_rank": "Sekiwake 1 West",
-      "east_rec": "8-2",
-      "west_rec": "9-1",
-      "h2h": "3-2",
+      "east_rec": "12-2",
+      "west_rec": "11-3",
+      "h2h": "3-3",
       "pick": "Wakamotoharu",
-      "pick_prob": 0.6194
+      "pick_prob": 0.6503
     },
     {
       "east": "Kirishima",
       "west": "Fujinokawa",
       "east_rank": "Ozeki 2 East",
       "west_rank": "Sekiwake 1 East",
-      "east_rec": "9-1",
-      "west_rec": "4-6",
-      "h2h": "3-1",
+      "east_rec": "9-5",
+      "west_rec": "7-7",
+      "h2h": "3-2",
       "pick": "Kirishima",
-      "pick_prob": 0.8104
+      "pick_prob": 0.5829
     },
     {
       "east": "Aonishiki",
       "west": "Kotozakura",
       "east_rank": "Ozeki 1 East",
       "west_rank": "Ozeki 1 West",
-      "east_rec": "5-5",
-      "west_rec": "6-4",
-      "h2h": "3-1",
+      "east_rec": "6-8",
+      "west_rec": "8-6",
+      "h2h": "3-2",
       "pick": "Aonishiki",
-      "pick_prob": 0.7515
+      "pick_prob": 0.6271
     },
     {
       "east": "Onosato",
       "west": "Hoshoryu",
       "east_rank": "Yokozuna 1 East",
       "west_rank": "Yokozuna 1 West",
-      "east_rec": "8-2",
-      "west_rec": "5-5",
-      "h2h": "2-6",
+      "east_rec": "12-2",
+      "west_rec": "9-5",
+      "h2h": "2-7",
       "pick": "Hoshoryu",
-      "pick_prob": 0.7405
+      "pick_prob": 0.7081
     }
   ]
 }
